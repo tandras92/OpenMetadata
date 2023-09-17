@@ -101,3 +101,16 @@ SET json = jsonb_set(
   true
 )
 WHERE json #>> '{pipelineType}' = 'metadata';
+
+-- create persona entity table
+CREATE TABLE IF NOT EXISTS persona_entity (
+    id VARCHAR(36) GENERATED ALWAYS AS (json ->> 'id') STORED NOT NULL,
+    name VARCHAR(256) GENERATED ALWAYS AS (json ->> 'name') STORED NOT NULL,
+    nameHash VARCHAR(256) NOT NULL,
+    json JSONB NOT NULL,
+    updatedAt BIGINT GENERATED ALWAYS AS ((json ->> 'updatedAt')::bigint) STORED NOT NULL,
+    updatedBy VARCHAR(256) GENERATED ALWAYS AS (json ->> 'updatedBy') STORED NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (nameHash)
+    );
+CREATE INDEX persona_name_index ON persona_entity USING btree (name);

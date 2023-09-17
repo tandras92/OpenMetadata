@@ -93,3 +93,16 @@ SET json = JSON_INSERT(
     JSON_EXTRACT(json, '$.sourceConfig.config.viewParsingTimeoutLimit')
 )
 WHERE JSON_EXTRACT(json, '$.pipelineType') = 'metadata';
+
+
+CREATE TABLE IF NOT EXISTS persona_entity (
+    id VARCHAR(36) GENERATED ALWAYS AS (json ->> '$.id') STORED NOT NULL,
+    name VARCHAR(256) GENERATED ALWAYS AS (json ->> '$.name') NOT NULL,
+    nameHash VARCHAR(256) NOT NULL COLLATE ascii_bin,
+    json JSON NOT NULL,
+    updatedAt BIGINT UNSIGNED GENERATED ALWAYS AS (json ->> '$.updatedAt') NOT NULL,
+    updatedBy VARCHAR(256) GENERATED ALWAYS AS (json ->> '$.updatedBy') NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (nameHash),
+    INDEX name_index(name)
+);
